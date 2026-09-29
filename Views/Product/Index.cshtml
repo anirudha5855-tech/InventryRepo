@@ -1,0 +1,105 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_InventryLayout.cshtml";
+}
+<div class="row">
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-header">
+                <h4>Add Customer</h4>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label>Product Name</label>
+                    <input type="text" id="txtname" class="form-control"/>
+                </div>
+                <div class="mb-3">
+                    <label>Rate</label>
+                    <input type="text" id="txtrate" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label>Gst</label>
+                    <input type="text" id="txtgst" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label>Stock Quantity</label>
+                    <input type="text" id="txtstock" class="form-control" />
+                </div>
+
+
+            </div>
+            <div class="card-footer">
+                <div class="mb-3">
+                    <input type="button" value="Add" class="btn btn-primary" onclick="SubmitProduct()"/>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="col-md-7">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <td>Sr. No.</td>
+                    <td>Product Name</td>
+                    <td>Rate</td>
+                    <td>GST</td>
+                    <td>Stock Quantity</td>
+                </tr>
+            </thead>
+            <tbody id="tbldata">
+            </tbody>
+
+        </table>
+    </div>
+</div>
+<script>
+    const fetchProducts =async()=>{
+    
+        const response = await fetch("/Product/GetProducts",{
+            method:"get",
+            headers:{
+                "content-type":"application/json"
+            }
+        });
+
+        const products= await response.json();
+        console.log(products);
+        var data="";
+        products.forEach(function(d,k){
+            data += "<tr> <td>" + (k + 1) + "</td><td>" + d.productName + "</td><td>" + d.rate + "</td><td>" + d.gst + "</td><td>" + d.stockQuantity + "</td></tr>"
+        })
+        document.getElementById("tbldata").innerHTML=data;
+        
+    }
+    fetchProducts();
+
+    const SubmitProduct = async () => {
+        var prod={
+            ProductName:document.getElementById("txtname").value,
+            Rate: document.getElementById("txtrate").value,
+            Gst: document.getElementById("txtgst").value,
+            StockQuantity: document.getElementById("txtstock").value
+        }
+        const responce= await fetch("/Product/Index",{
+            method:"post",
+            body:JSON.stringify(prod),
+            headers:{
+                "content-type":"application/json"
+            }
+        });
+        const obj = await responce.json();
+
+        ClearData();
+        fetchProducts();
+    }
+
+    const ClearData=()=>{
+    
+        document.getElementById("txtname").value="";
+        document.getElementById("txtrate").value="";
+        document.getElementById("txtgst").value="";
+        document.getElementById("txtstock").value="";
+    }
+</script>

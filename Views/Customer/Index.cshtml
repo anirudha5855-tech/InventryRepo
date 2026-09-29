@@ -1,0 +1,66 @@
+﻿@using Inventy_Demo_MVC_Core.models
+@model TblCustomer
+
+@{
+    Layout = "~/Views/Shared/_InventryLayout.cshtml";
+    List<TblCustomer> lst = (List<TblCustomer>)ViewData["CustLst"];
+    int srNo = 1;
+}
+<div class="row">
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-header">
+                <h4>Add Customer</h4>
+            </div>
+            <div class="card-body">
+                @using (Html.BeginForm())
+                {
+                    @Html.HiddenFor(x=>x.CustomerId)
+                    <div class="mb-3">
+                        <label>Customer Name</label>
+                        @Html.TextBoxFor(x => x.CustomerName, new { @class = "form-control" })
+                    </div>
+                    <div class="mb-3">
+                        <label>City</label>
+                        @Html.TextBoxFor(x => x.City, new { @class = "form-control" })
+                    </div>
+                    <div class="mb-3">
+                        <label>Mobile Number</label>
+                        @Html.TextBoxFor(x => x.Mobile, new { @class = "form-control" })
+                    </div>
+                    <div class="mb-3">
+                        <input type="submit" value="Add" class="btn btn-primary" />
+                    </div>
+                }
+            </div>
+        </div>
+
+    </div>
+    
+    <div class="col-md-7">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <td>Sr. No.</td>
+                    <td>Customer Name</td>
+                    <td>City</td>
+                    <td>Mobile</td>
+                </tr>
+            </thead>
+            <tbody>
+                
+                @foreach (var item in lst)
+                {
+                    <tr>
+                        <td>@srNo</td>
+                        <td>@item.CustomerName </td>
+                        <td>@item.City </td>
+                        <td>@item.Mobile </td>
+                    </tr>
+                    srNo++;
+                }
+            </tbody>
+
+        </table>
+    </div>
+</div>
