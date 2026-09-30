@@ -86,25 +86,31 @@
 </div>
 <script>
     var products = [];
+    var invoiceproducts=[];
+    var customers=[];
 
     const AddProduct = () => {
-        // var pname = document.getElementById("txtname").value;
-        var pname = document.getElementById("selProduct").value;
-        var rate = document.getElementById("txtrate").value;
+
+        var productselect = document.getElementById("selProduct").value;
+         var pid = productselect.pid
+
+        //var pid = document.getElementById("selProduct").value;
+        var pname = productselect.option[productselect.selex].textContent;
+        var rate = document.getElementById("txtrate").value || 0;
         var gst = document.getElementById("txtgst").value;
         var quant = document.getElementById("txtquantity").value;
         var tot = document.getElementById("txttotal").value;
 
         var pr = { "ProductName": pname, "Rate": rate, "Gst":gst, "Quantity":quant, "Total":tot };
-        products.push(pr);
-        console.log(products);
+        invoiceproducts.push(pr);
+        console.log(invoiceproducts);
         clearData();
         displayTable();
         
     }
     const displayTable = () => {
         var data = "";
-        products.forEach(function(d, k) {
+        invoiceproducts.forEach(function(d, k) {
             data += "<tr><td>" + (k + 1) + "</td><td>" + d.ProductName + "</td><td>" + d.Rate + "</td><td>" + d.Gst + "</td><td>" + d.Quantity + "</td><td>" + d.Total + "</td></tr>"
         });
         document.getElementById("tbldata").innerHTML = data;
@@ -129,9 +135,9 @@
                 "content-type": "application/json"
                    }
             });
-            const products = await response.json();
+            products = await response.json();
             console.log(products);
-            products.forEach(function(d, k) {
+            products.forEach(function(d) {
                 const option = document.createElement("option");
                 option.value = d.productId;
                 option.textContent = d.productName;
@@ -149,7 +155,7 @@
                 "content-type": "application/json"
             }
         });
-        const customers = await response.json();
+        customers = await response.json();
         console.log(customers);
         customers.forEach(function(d, k) {
             const option = document.createElement("option");
@@ -160,5 +166,84 @@
 
     }
     fetchCustomers();
+
+    // =========================
+    // Product Selection
+    // =========================
+    selectprod.addEventListener("change", function() {
+
+        var productId = this.value;
+
+        if (productId === "") {
+
+            document.getElementById("txtrate").value = "";
+            document.getElementById("txtgst").value = "";
+            document.getElementById("txtstock").value = "";
+            document.getElementById("txtquantity").value = "";
+            document.getElementById("txttotal").value = "";
+
+            return;
+        }
+
+        // Find selected product
+        var product = products.find(
+            p => p.productId == productId
+        );
+
+        console.log(product);
+
+        if (product) {
+
+            document.getElementById("txtrate").value = product.rate;
+            document.getElementById("txtgst").value = product.gst;
+            document.getElementById("txtstock").value = product.stockQuantity;
+
+            document.getElementById("txtquantity").value = 1;
+
+            calculateTotal();
+        }
+
+    });
+
+    // =========================
+    // Quantity Change
+    // =========================
+    document.getElementById("txtquantity").addEventListener("input", function() {
+
+        var quantity = parseInt(this.value) || 0;
+        var stock = parseInt(document.getElementById("txtstock").value) || 0;
+
+        if (quantity > stock) {
+
+            alert("Quantity cannot be greater than stock");
+
+            this.value = stock;
+            quantity = stock;
+        }
+
+        calculateTotal();
+    });
+
+
+    // =========================
+    // Calculate Total
+    // =========================
+    const calculateTotal = () => {
+
+        var rate = parseFloat(document.getElementById("txtrate").value) || 0;
+        var gst = parseFloat(document.getElementById("txtgst").value) || 0;
+        var quantity = parseInt(document.getElementById("txtquantity").value) || 0;
+
+        // Amount without GST
+        var amount = rate * quantity;
+
+        // GST percentage
+        var gstAmount = amount * gst / 100;
+
+        // Final amount
+        var total = amount + gstAmount;
+
+        document.getElementById("txttotal").value = total.toFixed(2);
+    };
 
 </script>
