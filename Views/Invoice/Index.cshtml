@@ -64,7 +64,7 @@
                 </table>
             </div>
             <div class="mb-3">
-                <table class="table table-borderd">
+                <table class="table table-borderd" id="InvoiveProducts">
                     <thead>
                         <tr>
                             <th>Sr No</th>
@@ -76,6 +76,12 @@
                         </tr>
                     </thead>
                     <tbody id="tbldata"></tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan=5>Total</td>
+                            <td id="grandTotal">0</td>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         </div>
@@ -91,17 +97,18 @@
 
     const AddProduct = () => {
 
-        var productselect = document.getElementById("selProduct").value;
+        var productselect = document.getElementById("selProduct");
          var pid = productselect.pid
 
         //var pid = document.getElementById("selProduct").value;
-        var pname = productselect.option[productselect.selex].textContent;
-        var rate = document.getElementById("txtrate").value || 0;
+        var pname = productselect.selectedOptions[0].text;
+        var rate = document.getElementById("txtrate").value;
         var gst = document.getElementById("txtgst").value;
         var quant = document.getElementById("txtquantity").value;
         var tot = document.getElementById("txttotal").value;
 
-        var pr = { "ProductName": pname, "Rate": rate, "Gst":gst, "Quantity":quant, "Total":tot };
+        console.log(pname);
+        var pr = {"ProductId":pid, "ProductName": pname, "Rate": rate, "Gst":gst, "Quantity":quant, "Total":tot };
         invoiceproducts.push(pr);
         console.log(invoiceproducts);
         clearData();
@@ -114,6 +121,23 @@
             data += "<tr><td>" + (k + 1) + "</td><td>" + d.ProductName + "</td><td>" + d.Rate + "</td><td>" + d.Gst + "</td><td>" + d.Quantity + "</td><td>" + d.Total + "</td></tr>"
         });
         document.getElementById("tbldata").innerHTML = data;
+      calculateGrandTotal();
+    }
+
+    const calculateGrandTotal=()=>{
+        const table=document.getElementById("InvoiveProducts");
+        const rows=table.tBodies[0].rows;
+        let sum=0;
+
+         for(let i=0; i< rows.length;i++)
+         {
+             const lastCellValue=parseFloat(rows[i].cells[rows[i].cells.length-1].textContent);
+             if(!isNaN(lastCellValue))
+             {
+                 sum+=lastCellValue;
+             }
+         }
+         document.getElementById("grandTotal").textContent = sum.toFixed(2);
     }
 
     const clearData = () => {
@@ -123,6 +147,8 @@
         document.getElementById("txtstock").value = "";
         document.getElementById("txtquantity").value = "";
         document.getElementById("txttotal").value = "";
+        document.getElementById("selProduct").selectedIndex="";
+        //document.getElementById("selCust").selectedIndex="";
     }
 
     // Fill Dropdown
@@ -244,6 +270,16 @@
         var total = amount + gstAmount;
 
         document.getElementById("txttotal").value = total.toFixed(2);
+        
     };
+
+    const SubmitData= async () =>{
+        var InvoiceDetails=[];
+        var InvoiceProducts=[];
+
+        var invDet={"InvoiceDate":document.getElementByID("invoicedate").value, "InvoiceAmount":document.getElementById("grandTotal").value, "FK_CustomerId":document.getElementById("").value }
+
+
+    }
 
 </script>
