@@ -36,9 +36,10 @@ pipeline {
         }
         stage('Deploy'){
             steps{
-                bat 
-                if exist 'C:\\inetpub\\wwwroot\\Inventry' rmdir /q /s 'C:\\inetpub\\wwwroot\\Inventry' 
+                bat '''
+                        if exist 'C:\\inetpub\\wwwroot\\Inventry' rmdir /q /s 'C:\\inetpub\\wwwroot\\Inventry' 
                         mkdir 'C:\\inetpub\\wwwroot\\Inventry'
+                    '''
                 bat "C:\\Windows\\System32\\xcopy.exe /E /Y /I publish\\* C:\\inetpub\\wwwroot\\Inventry"   
 
             }
